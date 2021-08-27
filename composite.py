@@ -54,11 +54,18 @@ sorted_mask = sorted(mask_list, key=natural_sort_key)
 # print(mask_list)
 
 for i,m in itertools.zip_longest(sorted_images,itertools.cycle(sorted_mask)):
-    print(i)
-    pateint_no = i.split('/')[4]
-    print(pateint_no)
+    
+    #x-ray videos
+    # print(i)
+    pateint = i.split('/')[4]
+    pateint_no = pateint.split('\\')[0]
+    video_no = pateint.split('\\')[1]
+    # print(pateint_no,video_no)
     image_name =os.path.basename(i)
-    print(image_name)
+    # print(image_name)
+    typeof_cathteter = m.split('/')[-2]
+    print(typeof_cathteter)
+    
     img = cv2.imread(i,0)
     # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img = cv2.resize (img,(256,256), interpolation = cv2.INTER_AREA)
@@ -75,6 +82,17 @@ for i,m in itertools.zip_longest(sorted_images,itertools.cycle(sorted_mask)):
     
     foreground = cv2.multiply(mask, img/255)
     cv2.imshow('img_for',foreground)
+    
+    save_img_path='G:/Catheter_Dataset/tracking_data/composite_data/videos/'+pateint_no+'/'+typeof_cathteter+'/'+video_no+'/'
+    if not os.path.exists(save_img_path):
+        os.makedirs(save_img_path)
+    save_msk_path='G:/Catheter_Dataset/tracking_data/composite_data/masks/'+pateint_no+'/'+typeof_cathteter+'/'+video_no+'/'
+    if not os.path.exists(save_msk_path):
+        os.makedirs(save_msk_path)
+    
+    cv2.imwrite(save_img_path+image_name,foreground/255.0)
+    cv2.imwrite(save_msk_path+image_name,mask_ori)
+    
     cv2.waitKey(0)
     if i is None:
         break
